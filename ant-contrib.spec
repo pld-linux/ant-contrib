@@ -1,11 +1,9 @@
-# TODO
-# - some deps missing:
-#build_contrib_jar:
-#    [javac] Compiling 88 source files to ant-contrib/build/classes
-#    [javac] ant-contrib/src/net/sf/antcontrib/antserver/server/ConnectionHandler.java:22: package org.apache.xml.serialize does not exist
+#
+# Conditional build:
+%bcond_without	javadoc		# don't build javadoc
 
-%define		subver b2
-%define		rel	0.1
+%define		subver	b2
+%define		rel		1
 Summary:	Collection of tasks for Ant
 Name:		ant-contrib
 Version:	1.0
@@ -18,6 +16,7 @@ Source0:	http://downloads.sourceforge.net/ant-contrib/%{name}-%{version}%{subver
 Patch0:		build_xml.patch
 Patch2:		antservertest.patch
 BuildRequires:	ant-junit >= 1.6.2
+BuildRequires:	ant >= 1.6
 BuildRequires:	java(jaxp_parser_impl)
 BuildRequires:	java-bcel >= 5.0
 BuildRequires:	java-junit >= 3.8.0
@@ -53,18 +52,24 @@ install -d test/lib
 
 %build
 junit_jar=$(find-jar junit)
-ln -s $junit_jar test/lib/junit-$(JUNIT_VER).jar
+xerces_jar=$(find-jar xercesImpl)
+ln -sf $junit_jar test/lib
+ln -sf $xerces_jar lib
 
 export OPT_JAR_LIST="ant/ant-junit junit"
 export CLASSPATH=
 CLASSPATH=build/lib/ant-contrib-%{version}.jar:$CLASSPATH
-echo $ANT_HOME
-%ant -Dsource=1.4 -Dversion=%{version} -Dbcel.jar=file://%{_javadir}/bcel.jar all
+%ant jar %{?with_javadoc:docs} \
+	-Djavac.target=1.4 \
+	-Djavac.source=1.4 \
+	-Dversion=%{version} \
+	-Dbcel.jar=file://%{_javadir}/bcel.jar
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 # jars
+install -d $RPM_BUILD_ROOT%{_javadir}/ant
 cp -p build/lib/%{name}.jar $RPM_BUILD_ROOT%{_javadir}/ant/%{name}.jar
 
 # javadoc
@@ -89,7 +94,9 @@ ln -nfs %{name}-%{version} %{_javadocdir}/%{name}
 %{_sysconfdir}/ant.d/ant-contrib
 %{_javadir}/ant/*.jar
 
+%if %{with javadoc}
 %files javadoc
 %defattr(644,root,root,755)
 %doc %{_javadocdir}/%{name}-%{version}
 %doc %{_javadocdir}/%{name}
+%endif
