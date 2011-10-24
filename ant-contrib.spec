@@ -14,9 +14,9 @@ URL:		http://ant-contrib.sourceforge.net/
 Source0:	http://downloads.sourceforge.net/ant-contrib/%{name}-%{version}%{subver}-src.tar.gz
 # Source0-md5:	66511dddcef3dc9798db33dbaca0d3de
 Patch0:		build_xml.patch
-Patch2:		antservertest.patch
-BuildRequires:	ant-junit >= 1.6.2
+Patch1:		antservertest.patch
 BuildRequires:	ant >= 1.6
+BuildRequires:	ant-junit >= 1.6.2
 BuildRequires:	java(jaxp_parser_impl)
 BuildRequires:	java-bcel >= 5.0
 BuildRequires:	java-junit >= 3.8.0
@@ -27,6 +27,7 @@ Requires:	ant >= 1.6.2
 Requires:	java(jaxp_parser_impl)
 Requires:	java-junit >= 3.8.0
 BuildArch:	noarch
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 The Ant-Contrib project is a collection of tasks (and at one point
@@ -40,10 +41,9 @@ Group:		Documentation
 API documentation for Ant contrib tasks.
 
 %prep
-%setup -q  -n %{name}
+%setup -q -n %{name}
 %patch0
-%patch2
-
+%patch1
 %undos manual/tasks/foreach.html manual/tasks/for.html
 
 %{__rm} -r test/src/net/sf/antcontrib/antclipse
@@ -57,7 +57,6 @@ ln -sf $junit_jar test/lib
 ln -sf $xerces_jar lib
 
 export OPT_JAR_LIST="ant/ant-junit junit"
-export CLASSPATH=
 CLASSPATH=build/lib/ant-contrib-%{version}.jar:$CLASSPATH
 %ant jar %{?with_javadoc:docs} \
 	-Djavac.target=1.4 \
