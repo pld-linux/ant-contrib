@@ -17,9 +17,9 @@ Patch0:		build_xml.patch
 Patch1:		antservertest.patch
 BuildRequires:	ant >= 1.6
 BuildRequires:	ant-junit >= 1.6.2
-BuildRequires:	java(jaxp_parser_impl)
 BuildRequires:	java-bcel >= 5.0
 BuildRequires:	java-junit >= 3.8.0
+BuildRequires:	java-xerces
 BuildRequires:	jdk >= 1.4.2
 BuildRequires:	jpackage-utils >= 1.5
 BuildRequires:	rpmbuild(macros) >= 1.553
