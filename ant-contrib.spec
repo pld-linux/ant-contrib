@@ -42,8 +42,8 @@ API documentation for Ant contrib tasks.
 
 %prep
 %setup -q -n %{name}
-%patch0
-%patch1
+%patch -P0
+%patch -P1
 %undos manual/tasks/foreach.html manual/tasks/for.html
 
 %{__rm} -r test/src/net/sf/antcontrib/antclipse
